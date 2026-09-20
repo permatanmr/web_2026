@@ -1,0 +1,613 @@
+<title>Modul Praktikum JavaScript</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --bg:#F5F6F8;
+    --surface:#FFFFFF;
+    --surface-2:#ECEEF2;
+    --border:#DCE0E6;
+    --text:#1A2029;
+    --text-muted:#5B6472;
+    --accent:#B45309;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#FDECC8;
+    --good:#0F7A5C;
+    --good-soft:#DCFCE7;
+    --bad:#C0281C;
+    --bad-soft:#FEE2E2;
+    --shadow: 0 1px 2px rgba(20,23,28,0.04), 0 4px 16px rgba(20,23,28,0.06);
+    --radius: 12px;
+    --editor-bg:#1B212C;
+    --editor-bg-2:#141922;
+    --editor-text:#E7E9EE;
+    --editor-muted:#8890A0;
+    --editor-border:#2C3341;
+    --header-h: 128px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171C;
+      --surface:#1B1F27;
+      --surface-2:#232833;
+      --border:#2E3440;
+      --text:#E7E9EE;
+      --text-muted:#9AA3B2;
+      --accent:#F0A93A;
+      --accent-ink:#1A1200;
+      --accent-soft:rgba(240,169,58,0.16);
+      --good:#4ADE94;
+      --good-soft:rgba(74,222,148,0.14);
+      --bad:#FB7267;
+      --bad-soft:rgba(251,114,103,0.14);
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171C;
+    --surface:#1B1F27;
+    --surface-2:#232833;
+    --border:#2E3440;
+    --text:#E7E9EE;
+    --text-muted:#9AA3B2;
+    --accent:#F0A93A;
+    --accent-ink:#1A1200;
+    --accent-soft:rgba(240,169,58,0.16);
+    --good:#4ADE94;
+    --good-soft:rgba(74,222,148,0.14);
+    --bad:#FB7267;
+    --bad-soft:rgba(251,114,103,0.14);
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  /* ============ BASE ============ */
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:"IBM Plex Sans", system-ui, sans-serif; text-wrap:balance; margin:0; }
+  p{ margin:0 0 14px; color:var(--text); }
+  a{ color:var(--accent); }
+  ::selection{ background:var(--accent-soft); }
+  .mono{ font-family:"JetBrains Mono", ui-monospace, monospace; }
+
+  /* ============ HEADER ============ */
+  header.top{
+    position:sticky; top:0; z-index:50;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+  }
+  .top-inner{
+    max-width:1120px; margin:0 auto; padding:18px 24px 14px;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:8px;
+  }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; }
+  header.top h1{ font-size:clamp(22px,3vw,30px); font-weight:700; letter-spacing:-0.01em; }
+  header.top .subtitle{ color:var(--text-muted); font-size:14.5px; margin-top:4px; max-width:640px; }
+
+  nav.chips{
+    display:flex; gap:8px; overflow-x:auto; padding:12px 24px 14px;
+    max-width:1120px; margin:0 auto; scrollbar-width:thin;
+  }
+  nav.chips::-webkit-scrollbar{ height:6px; }
+  nav.chips::-webkit-scrollbar-thumb{ background:var(--border); border-radius:99px; }
+  nav.chips a{
+    flex:0 0 auto;
+    text-decoration:none;
+    font-size:13px; font-weight:500;
+    color:var(--text-muted);
+    background:var(--surface-2);
+    border:1px solid transparent;
+    padding:6px 12px;
+    border-radius:99px;
+    white-space:nowrap;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  nav.chips a:hover{ color:var(--text); }
+  nav.chips a.active{
+    background:var(--accent-soft); color:var(--accent); border-color:var(--accent);
+    font-weight:600;
+  }
+
+  /* ============ LAYOUT ============ */
+  main{ max-width:760px; margin:0 auto; padding:40px 24px 100px; }
+
+  .intro-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:48px; box-shadow:var(--shadow);
+  }
+  .intro-card h2{ font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin-bottom:12px; font-weight:700; }
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:14px; font-size:13px; color:var(--text-muted); }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .swatch{ width:12px; height:12px; border-radius:4px; display:inline-block; }
+
+  section.chapter{ margin-bottom:64px; scroll-margin-top: 150px; }
+  .chapter-kicker{
+    font-family:"JetBrains Mono", monospace; font-size:13px; color:var(--text-muted);
+    margin-bottom:6px; letter-spacing:.02em;
+  }
+  .chapter h2.title{ font-size:clamp(22px,2.6vw,28px); font-weight:700; letter-spacing:-0.01em; margin-bottom:16px; }
+  .chapter .intro p{ color:var(--text-muted); font-size:15.5px; }
+
+  h3.sec-heading{
+    font-size:18px; font-weight:700; margin:32px 0 10px; color:var(--text);
+    scroll-margin-top:150px;
+  }
+  h4.code-heading{
+    font-size:14.5px; font-weight:600; margin:22px 0 4px; color:var(--text);
+  }
+  .code-note{ font-size:13px; color:var(--text-muted); font-style:italic; margin:0 0 10px; }
+
+  /* ============ PLAYGROUND ============ */
+  .pg{
+    background:var(--editor-bg);
+    border:1px solid var(--editor-border);
+    border-radius:10px;
+    overflow:hidden;
+    margin:10px 0 22px;
+    box-shadow:var(--shadow);
+  }
+  .pg-tabs, .pg-head{
+    display:flex; align-items:center; gap:2px;
+    background:var(--editor-bg-2);
+    border-bottom:1px solid var(--editor-border);
+    padding:0 8px;
+  }
+  .pg-tabs button.tab{
+    font-family:"JetBrains Mono", monospace; font-size:11.5px; font-weight:600; letter-spacing:.04em;
+    color:var(--editor-muted); background:transparent; border:none; cursor:pointer;
+    padding:10px 12px; border-bottom:2px solid transparent;
+  }
+  .pg-tabs button.tab.active{ color:var(--editor-text); border-bottom-color:var(--accent); }
+  .pg-label{
+    font-family:"JetBrains Mono", monospace; font-size:11.5px; font-weight:600; letter-spacing:.06em;
+    color:var(--editor-muted); padding:10px 4px;
+  }
+  .pg-actions{ margin-left:auto; display:flex; gap:6px; padding:6px; }
+  .pg button.act{
+    font-family:"IBM Plex Sans", sans-serif; font-size:12.5px; font-weight:600;
+    border:1px solid var(--editor-border); background:#242B38; color:var(--editor-text);
+    padding:6px 11px; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; gap:5px;
+    transition:background .15s, border-color .15s;
+  }
+  .pg button.act:hover{ background:#2C3444; }
+  .pg button.act.run{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+  .pg button.act.run:hover{ filter:brightness(1.08); }
+
+  .pg-editor{
+    display:block; width:100%; min-height:64px;
+    background:var(--editor-bg); color:var(--editor-text);
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; line-height:1.55;
+    border:none; outline:none; resize:vertical;
+    padding:14px 16px; tab-size:2;
+    field-sizing: content;
+  }
+  .pg-editor::placeholder{ color:var(--editor-muted); }
+
+  .pg-console, .pg-preview-wrap{ border-top:1px solid var(--editor-border); background:#12161D; }
+  .pg-console-label, .pg-preview-label{
+    font-family:"JetBrains Mono", monospace; font-size:10.5px; font-weight:700; letter-spacing:.08em;
+    color:var(--editor-muted); padding:8px 16px 0;
+  }
+  .pg-console-output{
+    margin:0; padding:8px 16px 14px; min-height:20px; max-height:260px; overflow:auto;
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12.5px; line-height:1.6;
+    color:#B7F5C9; white-space:pre-wrap; word-break:break-word;
+  }
+  .pg-console-output .err{ color:#FF9C93; }
+  .pg-console-output .empty{ color:var(--editor-muted); font-style:italic; }
+  .pg-preview{
+    display:block; width:100%; height:220px; border:none; background:#fff;
+  }
+
+  /* ============ EXERCISES ============ */
+  .exercises-title{ font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); font-weight:700; margin:40px 0 14px; }
+  .exercise{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    margin-bottom:16px; overflow:hidden; box-shadow:var(--shadow);
+  }
+  .exercise-soal{ padding:16px 20px; }
+  .exercise-soal .tag{
+    display:inline-block; font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:700;
+    color:var(--accent); background:var(--accent-soft); padding:2px 8px; border-radius:5px; margin-bottom:8px;
+  }
+  .exercise-soal p{ margin:0; font-size:15px; }
+  .kunci-toggle{
+    width:100%; text-align:left; border:none; border-top:1px solid var(--border);
+    background:var(--surface-2); color:var(--text-muted); font-family:"IBM Plex Sans",sans-serif;
+    font-size:13px; font-weight:600; padding:10px 20px; cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+  }
+  .kunci-toggle:hover{ color:var(--text); }
+  .kunci-toggle .chev{ transition:transform .15s; }
+  .kunci-toggle.open .chev{ transform:rotate(90deg); }
+  .kunci-body{ padding:4px 20px 18px; }
+  .kunci-body[hidden]{ display:none; }
+  .kunci-body .pg{ margin-top:12px; margin-bottom:6px; }
+  .kunci-text{
+    font-size:14.5px; color:var(--text); background:var(--good-soft); border:1px solid var(--good);
+    border-radius:8px; padding:12px 14px; margin-top:12px;
+  }
+
+  /* ============ CHALLENGE LIST ============ */
+  .challenge-list{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 22px; box-shadow:var(--shadow); margin-top:18px;
+  }
+  .challenge-list p{ font-size:14.5px; }
+  .challenge-list p:last-child{ margin-bottom:0; }
+
+  /* ============ CHEATSHEET ============ */
+  .cheat-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:1px;
+    background:var(--border); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+  }
+  .cheat-row{ display:contents; }
+  .cheat-cat, .cheat-val{ background:var(--surface); padding:11px 16px; font-size:13.5px; }
+  .cheat-cat{ font-weight:600; color:var(--text-muted); }
+  .cheat-val{ font-family:"JetBrains Mono",monospace; font-size:12.5px; color:var(--text); }
+  @media (max-width:600px){
+    .cheat-grid{ grid-template-columns:1fr; }
+    .cheat-row{ display:block; border-bottom:1px solid var(--border); }
+  }
+
+  footer.site{
+    max-width:760px; margin:0 auto; padding:20px 24px 60px; color:var(--text-muted); font-size:13px;
+  }
+  footer.site a{ color:var(--text-muted); text-decoration:underline; }
+
+  .refs li{ margin-bottom:8px; font-size:14.5px; }
+  .refs{ padding-left:20px; margin:0; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ transition:none !important; }
+  }
+</style>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="eyebrow"><span class="dot"></span>Modul Praktikum &middot; Interaktif</div>
+    <h1 id="page-title"></h1>
+    <div class="subtitle" id="page-subtitle"></div>
+  </div>
+  <nav class="chips" id="chip-nav"></nav>
+</header>
+
+<main id="main"></main>
+
+<footer class="site">
+  Setiap contoh kode di halaman ini berjalan langsung di browser Anda &mdash; tidak ada kode yang dikirim ke server mana pun. Cocok dipakai berdampingan dengan versi dokumen (.docx) dari modul yang sama.
+</footer>
+
+<script id="content-data" type="application/json">{"title":"Modul Praktikum JavaScript","subtitle":"Dari Dasar Pemrograman hingga Integrasi dengan HTML & CSS","author":"Educourse.id","chapters":[{"id":"bab1","number":1,"title":"Pengantar JavaScript dan Web Programming","intro":["Sebuah halaman web modern dibangun dari tiga lapisan yang saling melengkapi. HTML (HyperText Markup Language) menyusun struktur dan konten — judul, paragraf, tombol, formulir. CSS (Cascading Style Sheets) mengatur tampilan — warna, tata letak, jarak, animasi. JavaScript (JS) memberi perilaku — merespons klik, memvalidasi input, mengubah tampilan secara dinamis, dan berkomunikasi dengan server tanpa memuat ulang halaman.","Jika HTML adalah kerangka bangunan dan CSS adalah cat serta interiornya, JavaScript adalah listrik dan sistem yang membuat bangunan itu 'hidup': lampu menyala saat sakelar ditekan, pintu otomatis terbuka, alarm berbunyi saat ada yang salah. Modul ini membahas JavaScript dari sintaks dasar sampai bagaimana ia mengendalikan HTML dan CSS secara langsung di browser."],"sections":[{"type":"text","heading":"1.1 Tiga Cara Menjalankan JavaScript","body":["Ada beberapa tempat untuk menulis dan mencoba JavaScript sebelum masuk ke proyek nyata:","1. Console browser — buka DevTools (klik kanan pada halaman → Inspect, atau tekan F12), pilih tab Console, lalu ketik kode JS langsung di sana. Cara tercepat untuk eksperimen.","2. Tag \u003cscript> di dalam HTML — kode JS ditulis langsung di antara tag \u003cscript> dan \u003c/script>, biasanya diletakkan sebelum tag penutup \u003c/body> agar HTML sudah termuat lebih dulu.","3. File .js eksternal — kode JS ditulis di file terpisah (misalnya app.js) lalu dihubungkan ke HTML dengan \u003cscript src=\"app.js\">\u003c/script>. Ini pendekatan yang disarankan untuk proyek nyata karena memisahkan struktur (HTML) dari perilaku (JS)."]},{"type":"code","heading":"Contoh 1.1 — JavaScript pertama di halaman web","kind":"web","note":"Coba ubah teks di dalam textContent lalu tekan Jalankan.","html":"\u003ch1 id=\"judul\">Halo, Dunia!\u003c/h1>\n\u003cp>Buka console untuk melihat pesan tambahan dari JavaScript.\u003c/p>","css":"body { font-family: system-ui, sans-serif; text-align: center; margin-top: 40px; color: #1f2937; }\nh1 { color: #2563eb; }","js":"console.log(\"Skrip JavaScript berhasil dijalankan!\");\n\n// Mengubah isi elemen \u003ch1> yang sudah ada di HTML\ndocument.getElementById(\"judul\").textContent = \"Halo, Dunia Web!\";"}],"exercises":[{"soal":"Buat halaman HTML sederhana dengan sebuah \u003ch1>. Tambahkan JavaScript yang (a) menampilkan pesan berisi nama kalian ke console, dan (b) mengganti isi \u003ch1> menjadi 'Selamat datang, \u003cnama kalian>!'.","kunciKind":"web","kunci":{"html":"\u003ch1 id=\"sapaan\">Memuat...\u003c/h1>","css":"body { font-family: sans-serif; text-align: center; margin-top: 40px; }","js":"const nama = \"Rani\";\nconsole.log(\"Halaman dibuka oleh \" + nama);\ndocument.getElementById(\"sapaan\").textContent = \"Selamat datang, \" + nama + \"!\";"}},{"soal":"Jelaskan perbedaan menulis JavaScript langsung di dalam tag \u003cscript> (internal) dengan menghubungkan file .js eksternal. Kapan sebaiknya masing-masing digunakan?","kunciKind":"text","kunci":"Internal cocok untuk skrip pendek/khusus satu halaman dan eksperimen cepat karena semuanya ada di satu file. File eksternal lebih disarankan untuk proyek nyata: kode JS bisa dipakai ulang di banyak halaman, lebih mudah dirawat karena HTML dan logika terpisah, serta bisa dimuat dengan cache oleh browser sehingga halaman berikutnya terasa lebih cepat."}]},{"id":"bab2","number":2,"title":"Variabel, Tipe Data, dan Operator","intro":["Variabel adalah tempat menyimpan nilai yang dapat digunakan dan diubah sepanjang program berjalan. JavaScript menyediakan tiga kata kunci untuk mendeklarasikan variabel: var, let, dan const."],"sections":[{"type":"text","heading":"2.1 var, let, dan const","body":["var — cara lama (sebelum ES6/2015). Cakupannya berbasis fungsi (function-scoped) dan bisa dideklarasikan ulang, yang sering menimbulkan bug tak terduga. Sebaiknya dihindari pada kode baru.","let — untuk nilai yang akan berubah (misalnya penghitung, status). Cakupannya berbasis blok (block-scoped), lebih aman dan lebih dapat diprediksi daripada var.","const — untuk nilai yang tidak akan diikat ulang setelah deklarasi (misalnya konfigurasi, hasil perhitungan tetap). Gunakan const sebagai pilihan pertama; pindah ke let hanya jika nilainya memang perlu berubah."]},{"type":"text","heading":"2.2 Tipe Data","body":["JavaScript mengenal beberapa tipe data primitif: string (teks, diapit tanda kutip), number (angka, termasuk desimal), boolean (true/false), undefined (variabel sudah dideklarasikan tapi belum diberi nilai), dan null (nilai kosong yang disengaja).","Selain itu ada tipe non-primitif: object (kumpulan pasangan key-value) dan array (daftar berurutan, sebenarnya adalah bentuk khusus dari object). Operator typeof digunakan untuk memeriksa tipe suatu nilai — perlu dicatat bahwa typeof [] dan typeof {} sama-sama menghasilkan \"object\"; untuk membedakan array, gunakan Array.isArray()."]},{"type":"code","heading":"Contoh 2.1 — Deklarasi variabel dan tipe data","kind":"js","code":"let nama = \"Andi\";\nconst tahunLahir = 2005;\nlet umur = 2026 - tahunLahir;\nlet sudahLulus = false;\n\nconsole.log(nama, umur, sudahLulus);\nconsole.log(typeof nama, typeof umur, typeof sudahLulus);\nconsole.log(typeof undefined, typeof null);\nconsole.log(Array.isArray([1, 2, 3]));"},{"type":"text","heading":"2.3 Operator","body":["Operator aritmatika: + (tambah, juga untuk menggabung string), - , * , / , % (sisa bagi/modulo), ** (pangkat).","Operator perbandingan: === dan !== (sama/tidak sama, memeriksa nilai DAN tipe — selalu diutamakan), == dan != (memeriksa nilai saja dengan konversi tipe otomatis — sebaiknya dihindari karena bisa membingungkan), \u003c > \u003c= >=.","Operator logika: && (AND), || (OR), ! (NOT).","Operator ternary (kondisional singkat): kondisi ? nilaiJikaBenar : nilaiJikaSalah.","Template literal: string yang diapit backtick (`) memungkinkan menyisipkan variabel langsung dengan ${namaVariabel}, tanpa perlu menyambung string dengan +."]},{"type":"code","heading":"Contoh 2.2 — Operator dan template literal","kind":"js","code":"const harga = 150000;\nconst diskonPersen = 20;\nconst potongan = harga * (diskonPersen / 100);\nconst hargaAkhir = harga - potongan;\n\nconsole.log(`Harga awal: Rp${harga}`);\nconsole.log(`Diskon ${diskonPersen}% = Rp${potongan}`);\nconsole.log(`Harga akhir: Rp${hargaAkhir}`);\n\nconst status = hargaAkhir \u003c 100000 ? \"Murah\" : \"Standar\";\nconsole.log(`Kategori harga: ${status}`);"}],"exercises":[{"soal":"Buat variabel nilaiUjian (angka bebas 0-100). Gunakan operator ternary untuk menentukan 'Lulus' jika nilai >= 60, atau 'Tidak Lulus' jika kurang. Tampilkan hasilnya dengan template literal, contoh: 'Nilai 75 -> Lulus'.","kunciKind":"js","kunci":"const nilaiUjian = 75;\nconst status = nilaiUjian >= 60 ? \"Lulus\" : \"Tidak Lulus\";\nconsole.log(`Nilai ${nilaiUjian} -> ${status}`);"},{"soal":"Tebak lebih dulu, lalu jalankan untuk membuktikan: apa hasil dari typeof \"5\" + 5, dan apa hasil dari Number(\"5\") + 5? Jelaskan mengapa berbeda.","kunciKind":"js","kunci":"// typeof \"5\" dievaluasi lebih dulu -> \"string\", lalu \"string\" + 5 -> \"string5\"\nconsole.log(typeof \"5\" + 5);\n\n// Number(\"5\") mengubah teks \"5\" menjadi angka 5, lalu 5 + 5 -> 10\nconsole.log(Number(\"5\") + 5);\n\n// Pelajaran: operator + akan MENGGABUNG jika salah satu operand adalah string,\n// dan MENJUMLAH jika kedua operand adalah angka."},{"soal":"Buat variabel panjang dan lebar sebuah kamar (dalam meter) menggunakan const. Hitung luas dan keliling, lalu tampilkan keduanya dalam satu kalimat memakai template literal.","kunciKind":"js","kunci":"const panjang = 4;\nconst lebar = 3;\nconst luas = panjang * lebar;\nconst keliling = 2 * (panjang + lebar);\nconsole.log(`Kamar ${panjang}m x ${lebar}m memiliki luas ${luas} m2 dan keliling ${keliling} m`);"}]},{"id":"bab3","number":3,"title":"Struktur Kontrol: Percabangan dan Perulangan","intro":["Struktur kontrol menentukan urutan eksekusi kode: percabangan memilih blok kode mana yang dijalankan berdasarkan kondisi, sedangkan perulangan menjalankan blok kode berulang kali."],"sections":[{"type":"code","heading":"Contoh 3.1 — if / else if / else","kind":"js","code":"const nilai = 82;\nlet huruf;\n\nif (nilai >= 90) {\n  huruf = \"A\";\n} else if (nilai >= 80) {\n  huruf = \"B\";\n} else if (nilai >= 70) {\n  huruf = \"C\";\n} else {\n  huruf = \"D\";\n}\n\nconsole.log(`Nilai ${nilai} mendapat huruf ${huruf}`);"},{"type":"code","heading":"Contoh 3.2 — switch","kind":"js","code":"const hari = 3;\nlet namaHari;\n\nswitch (hari) {\n  case 1:\n    namaHari = \"Senin\";\n    break;\n  case 2:\n    namaHari = \"Selasa\";\n    break;\n  case 3:\n    namaHari = \"Rabu\";\n    break;\n  default:\n    namaHari = \"Hari tidak dikenal\";\n}\n\nconsole.log(namaHari);\n// Catatan: \"break\" penting agar eksekusi tidak \"jatuh\" ke case berikutnya."},{"type":"text","heading":"3.3 Jenis-Jenis Perulangan","body":["for — dipakai saat jumlah perulangan diketahui/terhitung, misalnya mengulang dari 0 sampai 9.","while — mengulang selama kondisi masih benar; jumlah perulangan tidak selalu diketahui di awal.","do...while — sama seperti while, tetapi blok kode dijalankan minimal satu kali sebelum kondisi dicek.","for...of — cara modern untuk mengulang setiap NILAI dalam array (atau string).","for...in — mengulang setiap KEY/nama properti dalam sebuah object.","break menghentikan perulangan sepenuhnya; continue melompati satu iterasi dan lanjut ke iterasi berikutnya."]},{"type":"code","heading":"Contoh 3.3 — for, while, dan for...of","kind":"js","code":"// for: mencetak angka 1 sampai 5\nfor (let i = 1; i \u003c= 5; i++) {\n  console.log(`Perulangan ke-${i}`);\n}\n\n// while: menghitung mundur\nlet sisa = 3;\nwhile (sisa > 0) {\n  console.log(`Hitung mundur: ${sisa}`);\n  sisa--;\n}\n\n// for...of: mengulang isi array\nconst buah = [\"apel\", \"jeruk\", \"mangga\"];\nfor (const item of buah) {\n  console.log(`Buah: ${item}`);\n}"}],"exercises":[{"soal":"Buat program FizzBuzz: cetak angka 1 sampai 20. Untuk kelipatan 3 cetak 'Fizz', kelipatan 5 cetak 'Buzz', kelipatan 3 DAN 5 cetak 'FizzBuzz', selain itu cetak angkanya.","kunciKind":"js","kunci":"for (let i = 1; i \u003c= 20; i++) {\n  if (i % 3 === 0 && i % 5 === 0) {\n    console.log(\"FizzBuzz\");\n  } else if (i % 3 === 0) {\n    console.log(\"Fizz\");\n  } else if (i % 5 === 0) {\n    console.log(\"Buzz\");\n  } else {\n    console.log(i);\n  }\n}"},{"soal":"Diberikan array nilai = [70, 85, 60, 90, 55]. Gunakan for...of untuk menjumlahkan semua nilai, lalu hitung dan tampilkan rata-ratanya.","kunciKind":"js","kunci":"const nilai = [70, 85, 60, 90, 55];\nlet total = 0;\n\nfor (const n of nilai) {\n  total += n;\n}\n\nconst rataRata = total / nilai.length;\nconsole.log(`Total: ${total}, Rata-rata: ${rataRata}`);"},{"soal":"Gunakan switch untuk mengubah angka bulan (1-12) menjadi nama bulan dalam Bahasa Indonesia. Uji dengan bulan = 8.","kunciKind":"js","kunci":"const bulan = 8;\nlet namaBulan;\n\nswitch (bulan) {\n  case 1: namaBulan = \"Januari\"; break;\n  case 2: namaBulan = \"Februari\"; break;\n  case 3: namaBulan = \"Maret\"; break;\n  case 4: namaBulan = \"April\"; break;\n  case 5: namaBulan = \"Mei\"; break;\n  case 6: namaBulan = \"Juni\"; break;\n  case 7: namaBulan = \"Juli\"; break;\n  case 8: namaBulan = \"Agustus\"; break;\n  case 9: namaBulan = \"September\"; break;\n  case 10: namaBulan = \"Oktober\"; break;\n  case 11: namaBulan = \"November\"; break;\n  case 12: namaBulan = \"Desember\"; break;\n  default: namaBulan = \"Bulan tidak valid\";\n}\nconsole.log(namaBulan); // Agustus"}]},{"id":"bab4","number":4,"title":"Fungsi","intro":["Fungsi adalah blok kode yang dapat dipanggil berulang kali. Fungsi membantu memecah program menjadi bagian-bagian kecil yang lebih mudah dibaca, diuji, dan digunakan ulang."],"sections":[{"type":"code","heading":"Contoh 4.1 — Function declaration, expression, dan arrow function","kind":"js","code":"// 1. Function declaration — bisa dipanggil sebelum dideklarasikan (hoisting)\nfunction sapa(nama) {\n  return `Halo, ${nama}!`;\n}\n\n// 2. Function expression — disimpan dalam variabel\nconst kalikan = function (a, b) {\n  return a * b;\n};\n\n// 3. Arrow function — sintaks ringkas, populer pada kode modern\nconst tambah = (a, b) => a + b;\n\nconsole.log(sapa(\"Sinta\"));\nconsole.log(kalikan(4, 5));\nconsole.log(tambah(4, 5));"},{"type":"text","heading":"4.2 Parameter Default dan Rest Parameter","body":["Parameter default memberi nilai bawaan jika argumen tidak dikirim saat pemanggilan fungsi.","Rest parameter (...namaVariabel) mengumpulkan seluruh argumen tambahan menjadi satu array, berguna saat jumlah argumen tidak tetap."]},{"type":"code","heading":"Contoh 4.2 — Default parameter dan rest parameter","kind":"js","code":"function sapaDenganSalam(nama, salam = \"Halo\") {\n  return `${salam}, ${nama}!`;\n}\n\nconsole.log(sapaDenganSalam(\"Budi\"));           // pakai salam default\nconsole.log(sapaDenganSalam(\"Budi\", \"Selamat pagi\"));\n\nfunction jumlahkanSemua(...angka) {\n  return angka.reduce((total, n) => total + n, 0);\n}\n\nconsole.log(jumlahkanSemua(1, 2, 3));      // 6\nconsole.log(jumlahkanSemua(5, 10, 15, 20)); // 50"},{"type":"text","heading":"4.3 Scope (Cakupan Variabel)","body":["Variabel yang dideklarasikan di dalam fungsi (local scope) hanya bisa diakses di dalam fungsi tersebut. Variabel yang dideklarasikan di luar semua fungsi (global scope) bisa diakses dari mana saja dalam file. Sebaiknya batasi penggunaan variabel global karena mudah menimbulkan konflik nama pada program yang besar."]}],"exercises":[{"soal":"Buat fungsi hitungLuasPersegiPanjang(panjang, lebar) yang mengembalikan luasnya. Panggil fungsi tersebut dengan beberapa nilai berbeda dan tampilkan hasilnya.","kunciKind":"js","kunci":"function hitungLuasPersegiPanjang(panjang, lebar) {\n  return panjang * lebar;\n}\n\nconsole.log(hitungLuasPersegiPanjang(5, 3));  // 15\nconsole.log(hitungLuasPersegiPanjang(10, 2)); // 20"},{"soal":"Ubah fungsi berikut menjadi arrow function: function isGenap(n) { return n % 2 === 0; }","kunciKind":"js","kunci":"const isGenap = (n) => n % 2 === 0;\n\nconsole.log(isGenap(4)); // true\nconsole.log(isGenap(7)); // false"},{"soal":"Buat fungsi cariNilaiTertinggi(...angka) yang menerima jumlah argumen berapa pun dan mengembalikan nilai terbesar (petunjuk: gunakan Math.max bersama spread, atau reduce).","kunciKind":"js","kunci":"function cariNilaiTertinggi(...angka) {\n  return Math.max(...angka);\n}\n\nconsole.log(cariNilaiTertinggi(3, 9, 2, 7)); // 9"}]},{"id":"bab5","number":5,"title":"Struktur Data: Array dan Object","intro":["Array menyimpan sekumpulan data berurutan; object menyimpan data dalam bentuk pasangan key-value. Keduanya adalah struktur data paling sering dipakai dalam pemrograman web, misalnya untuk merepresentasikan daftar produk atau data satu pengguna."],"sections":[{"type":"text","heading":"5.1 Method Array yang Sering Dipakai","body":["push(item) / pop() — menambah/menghapus elemen di akhir array.","map(fungsi) — membuat array BARU berisi hasil transformasi setiap elemen.","filter(fungsi) — membuat array BARU berisi elemen yang lolos suatu kondisi.","reduce(fungsi, nilaiAwal) — meringkas seluruh elemen array menjadi satu nilai (misalnya total atau rata-rata).","forEach(fungsi) — menjalankan suatu aksi untuk setiap elemen, tanpa mengembalikan array baru.","find(fungsi) — mengembalikan elemen PERTAMA yang cocok dengan kondisi.","includes(nilai) — memeriksa apakah suatu nilai ada dalam array."]},{"type":"code","heading":"Contoh 5.1 — map, filter, dan reduce","kind":"js","code":"const nilaiUjian = [70, 45, 88, 92, 55, 100];\n\n// filter: ambil yang lulus (>= 60)\nconst lulus = nilaiUjian.filter((n) => n >= 60);\nconsole.log(\"Lulus:\", lulus);\n\n// map: tambahkan nilai bonus 5 poin untuk semua peserta\nconst nilaiBonus = nilaiUjian.map((n) => n + 5);\nconsole.log(\"Setelah bonus:\", nilaiBonus);\n\n// reduce: hitung total lalu rata-rata\nconst total = nilaiUjian.reduce((jumlah, n) => jumlah + n, 0);\nconst rataRata = total / nilaiUjian.length;\nconsole.log(`Total: ${total}, Rata-rata: ${rataRata.toFixed(2)}`);\n\n// method-method ini bisa dirangkai (chaining)\nconst rataRataLulus = nilaiUjian\n  .filter((n) => n >= 60)\n  .reduce((a, b) => a + b, 0) / lulus.length;\nconsole.log(`Rata-rata yang lulus: ${rataRataLulus.toFixed(2)}`);"},{"type":"text","heading":"5.2 Object: Menyimpan Data Terstruktur","body":["Object cocok untuk merepresentasikan satu entitas dengan banyak properti, misalnya satu mahasiswa dengan nama, NIM, dan daftar nilai. Properti diakses dengan dot notation (objek.properti) atau bracket notation (objek[\"properti\"]) — bracket notation wajib dipakai jika nama properti disimpan dalam variabel atau mengandung karakter khusus. Object juga bisa memiliki method (fungsi sebagai properti); di dalam method, kata kunci this merujuk ke object itu sendiri."]},{"type":"code","heading":"Contoh 5.2 — Object, method this, dan destructuring","kind":"js","code":"const mahasiswa = {\n  nama: \"Citra\",\n  nim: \"2026001\",\n  nilai: [80, 90, 75],\n  rataRata() {\n    const total = this.nilai.reduce((a, b) => a + b, 0);\n    return total / this.nilai.length;\n  },\n};\n\nconsole.log(mahasiswa.nama);\nconsole.log(mahasiswa[\"nim\"]);\nconsole.log(`Rata-rata ${mahasiswa.nama}: ${mahasiswa.rataRata()}`);\n\n// Destructuring: ambil beberapa properti sekaligus jadi variabel\nconst { nama, nim } = mahasiswa;\nconsole.log(nama, nim);\n\n// Spread: menyalin & menambah properti baru tanpa mengubah object asli\nconst mahasiswaBaru = { ...mahasiswa, semester: 3 };\nconsole.log(mahasiswaBaru);"}],"exercises":[{"soal":"Diberikan array angka = [4, 9, 15, 22, 7, 30]. Gunakan filter untuk mengambil angka genap, lalu map untuk mengalikannya dengan 2. Tampilkan hasil akhirnya.","kunciKind":"js","kunci":"const angka = [4, 9, 15, 22, 7, 30];\n\nconst hasil = angka\n  .filter((n) => n % 2 === 0)\n  .map((n) => n * 2);\n\nconsole.log(hasil); // [8, 44, 60]"},{"soal":"Buat object produk dengan properti nama, harga, dan stok. Tambahkan method infoProduk() yang mengembalikan kalimat deskripsi memakai this dan template literal.","kunciKind":"js","kunci":"const produk = {\n  nama: \"Keyboard Mekanik\",\n  harga: 450000,\n  stok: 12,\n  infoProduk() {\n    return `${this.nama} - Rp${this.harga} (stok: ${this.stok})`;\n  },\n};\n\nconsole.log(produk.infoProduk());"},{"soal":"Diberikan array of objects: const siswa = [{nama:'A', nilai:80}, {nama:'B', nilai:55}, {nama:'C', nilai:70}]. Gunakan filter untuk mendapatkan nama-nama siswa yang lulus (nilai >= 60), hasil akhirnya berupa array nama saja (kombinasikan filter + map).","kunciKind":"js","kunci":"const siswa = [\n  { nama: 'A', nilai: 80 },\n  { nama: 'B', nilai: 55 },\n  { nama: 'C', nilai: 70 },\n];\n\nconst namaLulus = siswa\n  .filter((s) => s.nilai >= 60)\n  .map((s) => s.nama);\n\nconsole.log(namaLulus); // ['A', 'C']"}]},{"id":"bab6","number":6,"title":"DOM (Document Object Model)","intro":["Ketika browser memuat HTML, ia membangun representasi halaman dalam bentuk struktur pohon di memori yang disebut DOM (Document Object Model). Setiap tag HTML menjadi sebuah 'node' yang bisa dibaca dan diubah lewat JavaScript. Inilah mekanisme yang memungkinkan JavaScript mengubah halaman secara dinamis tanpa memuat ulang."],"sections":[{"type":"text","heading":"6.1 Memilih Elemen","body":["document.getElementById(\"id\") — mengambil satu elemen berdasarkan atribut id.","document.querySelector(\"selectorCSS\") — mengambil elemen PERTAMA yang cocok dengan selector CSS apa pun (misalnya \".kelas\", \"#id\", \"ul li\"). Paling fleksibel dan disarankan untuk dipakai sebagai pilihan utama.","document.querySelectorAll(\"selectorCSS\") — mengambil SEMUA elemen yang cocok, dikembalikan sebagai NodeList (mirip array, bisa dipakai dengan forEach)."]},{"type":"text","heading":"6.2 Membaca dan Mengubah Elemen","body":["textContent — membaca/mengubah teks polos di dalam elemen (aman, tidak menafsirkan tag HTML).","innerHTML — membaca/mengubah isi elemen termasuk tag HTML di dalamnya (hati-hati: hanya masukkan HTML yang tepercaya, karena innerHTML dari input pengguna dapat menimbulkan celah keamanan XSS).","setAttribute(nama, nilai) / getAttribute(nama) — mengubah/membaca atribut HTML seperti src, href, atau disabled.","classList.add() / .remove() / .toggle() / .contains() — cara paling umum untuk mengatur tampilan lewat CSS class, dibahas lebih lanjut di Bab 8.","style.namaProperti — mengubah satu properti CSS langsung lewat JS (misalnya element.style.color = \"red\"); cocok untuk perubahan sekali pakai yang dihitung secara dinamis."]},{"type":"code","heading":"Contoh 6.1 — Memilih & mengubah elemen","kind":"web","html":"\u003cdiv class=\"kartu\">\n  \u003ch2 id=\"judul-kartu\">Judul Awal\u003c/h2>\n  \u003cp class=\"deskripsi\">Deskripsi awal yang akan diganti.\u003c/p>\n  \u003cbutton id=\"btn-ubah\">Ubah Konten\u003c/button>\n\u003c/div>","css":"body { font-family: system-ui, sans-serif; padding: 20px; }\n.kartu { border: 1px solid #cbd5e1; border-radius: 10px; padding: 20px; max-width: 320px; }\nbutton { margin-top: 10px; padding: 8px 14px; border: none; border-radius: 6px; background: #2563eb; color: white; cursor: pointer; }\nbutton:hover { background: #1d4ed8; }","js":"const btn = document.getElementById(\"btn-ubah\");\nconst judul = document.querySelector(\"#judul-kartu\");\nconst deskripsi = document.querySelector(\".deskripsi\");\n\nbtn.addEventListener(\"click\", () => {\n  judul.textContent = \"Judul Sudah Diubah!\";\n  deskripsi.textContent = \"Konten ini diganti oleh JavaScript saat tombol diklik.\";\n});"},{"type":"text","heading":"6.3 Membuat dan Menghapus Elemen Secara Dinamis","body":["document.createElement(\"tag\") membuat elemen baru di memori. Elemen tersebut baru muncul di halaman setelah dipasang dengan parent.appendChild(elemen) atau parent.append(elemen). Sebaliknya, elemen.remove() menghapus elemen dari halaman."]},{"type":"code","heading":"Contoh 6.2 — Menambah item daftar secara dinamis","kind":"web","html":"\u003cdiv class=\"wrap\">\n  \u003cinput type=\"text\" id=\"input-item\" placeholder=\"Nama barang belanja...\">\n  \u003cbutton id=\"btn-tambah\">Tambah\u003c/button>\n  \u003cul id=\"daftar-belanja\">\u003c/ul>\n\u003c/div>","css":"body { font-family: system-ui, sans-serif; padding: 20px; }\ninput { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }\nbutton { padding: 8px 14px; border: none; border-radius: 6px; background: #059669; color: white; cursor: pointer; margin-left: 6px; }\n#daftar-belanja { margin-top: 14px; padding-left: 20px; }\n#daftar-belanja li { margin-bottom: 6px; }","js":"const input = document.getElementById(\"input-item\");\nconst tombolTambah = document.getElementById(\"btn-tambah\");\nconst daftar = document.getElementById(\"daftar-belanja\");\n\ntombolTambah.addEventListener(\"click\", () => {\n  const teks = input.value.trim();\n  if (teks === \"\") return; // abaikan input kosong\n\n  const itemBaru = document.createElement(\"li\");\n  itemBaru.textContent = teks;\n  daftar.appendChild(itemBaru);\n\n  input.value = \"\"; // kosongkan input setelah ditambahkan\n  input.focus();\n});"}],"exercises":[{"soal":"Buat sebuah tombol dan sebuah \u003cp>. Saat tombol diklik, ubah warna teks paragraf menjadi merah menggunakan style.color, dan ubah isinya menjadi 'Warna sudah diubah!' menggunakan textContent.","kunciKind":"web","kunci":{"html":"\u003cp id=\"teks\">Teks awal berwarna hitam.\u003c/p>\n\u003cbutton id=\"btn\">Ubah Warna\u003c/button>","css":"body { font-family: sans-serif; padding: 20px; }","js":"const teks = document.getElementById(\"teks\");\nconst btn = document.getElementById(\"btn\");\n\nbtn.addEventListener(\"click\", () => {\n  teks.style.color = \"red\";\n  teks.textContent = \"Warna sudah diubah!\";\n});"}},{"soal":"Buat 3 elemen \u003cli> di dalam \u003cul>. Gunakan querySelectorAll dan forEach untuk menambahkan class 'ditandai' ke SEMUA elemen li tersebut sekaligus saat sebuah tombol diklik.","kunciKind":"web","kunci":{"html":"\u003cul id=\"daftar\">\n  \u003cli>Item satu\u003c/li>\n  \u003cli>Item dua\u003c/li>\n  \u003cli>Item tiga\u003c/li>\n\u003c/ul>\n\u003cbutton id=\"btn-tandai\">Tandai Semua\u003c/button>","css":".ditandai { background: #fef08a; font-weight: bold; }\nbody { font-family: sans-serif; padding: 20px; }","js":"const btn = document.getElementById(\"btn-tandai\");\n\nbtn.addEventListener(\"click\", () => {\n  const semuaItem = document.querySelectorAll(\"#daftar li\");\n  semuaItem.forEach((li) => li.classList.add(\"ditandai\"));\n});"}},{"soal":"Buat tombol 'Tambah Kotak' yang setiap kali diklik menambahkan satu \u003cdiv> baru berwarna acak (gunakan Math.random) ke dalam sebuah container.","kunciKind":"web","kunci":{"html":"\u003cbutton id=\"btn-tambah\">Tambah Kotak\u003c/button>\n\u003cdiv id=\"container\">\u003c/div>","css":"#container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }\n#container div { width: 40px; height: 40px; border-radius: 6px; }\nbody { font-family: sans-serif; padding: 20px; }","js":"const btn = document.getElementById(\"btn-tambah\");\nconst container = document.getElementById(\"container\");\n\nbtn.addEventListener(\"click\", () => {\n  const kotak = document.createElement(\"div\");\n  const warna = `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;\n  kotak.style.backgroundColor = warna;\n  container.appendChild(kotak);\n});"}}]},{"id":"bab7","number":7,"title":"Event Handling","intro":["Event adalah 'kejadian' yang terjadi pada halaman: klik tombol, mengetik di input, mengirim formulir, menggerakkan mouse, dan sebagainya. addEventListener adalah cara standar untuk 'mendengarkan' kejadian tersebut dan menjalankan fungsi sebagai responsnya."],"sections":[{"type":"text","heading":"7.1 addEventListener dan Event Object","body":["Pola dasarnya: elemen.addEventListener(\"namaEvent\", fungsiHandler). Event yang umum dipakai: click, input (setiap kali nilai input berubah), submit (form dikirim), keydown/keyup (tombol keyboard ditekan), mouseover/mouseout, change (nilai elemen berubah dan kehilangan fokus).","Fungsi handler otomatis menerima satu parameter, biasanya ditulis event atau e — sebuah object berisi informasi kejadian tersebut, misalnya e.target (elemen yang memicu event) dan e.preventDefault() (mencegah perilaku bawaan browser, misalnya mencegah form reload halaman saat disubmit)."]},{"type":"code","heading":"Contoh 7.1 — Validasi form sederhana dengan preventDefault","kind":"web","html":"\u003cform id=\"form-daftar\">\n  \u003clabel>Email:\u003c/label>\u003cbr>\n  \u003cinput type=\"text\" id=\"email\" placeholder=\"nama@email.com\">\u003cbr>\n  \u003cbutton type=\"submit\">Daftar\u003c/button>\n  \u003cp id=\"pesan\">\u003c/p>\n\u003c/form>","css":"body { font-family: system-ui, sans-serif; padding: 20px; }\ninput { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; width: 220px; }\nbutton { margin-top: 10px; padding: 8px 14px; border: none; border-radius: 6px; background: #2563eb; color: white; cursor: pointer; }\n#pesan.error { color: #dc2626; }\n#pesan.sukses { color: #059669; }","js":"const form = document.getElementById(\"form-daftar\");\nconst inputEmail = document.getElementById(\"email\");\nconst pesan = document.getElementById(\"pesan\");\n\nform.addEventListener(\"submit\", (e) => {\n  e.preventDefault(); // mencegah form memuat ulang halaman\n\n  const email = inputEmail.value.trim();\n  const valid = email.includes(\"@\") && email.includes(\".\");\n\n  if (valid) {\n    pesan.textContent = \"Pendaftaran berhasil!\";\n    pesan.className = \"sukses\";\n  } else {\n    pesan.textContent = \"Email tidak valid. Pastikan mengandung '@' dan domain.\";\n    pesan.className = \"error\";\n  }\n});"},{"type":"text","heading":"7.2 Event Delegation","body":["Jika ada banyak elemen sejenis (misalnya puluhan tombol 'Hapus' pada daftar tugas), memasang addEventListener satu per satu kurang efisien — apalagi jika elemen ditambahkan secara dinamis. Event delegation memasang SATU listener pada elemen induk (parent), lalu memeriksa e.target untuk mengetahui elemen anak mana yang sebenarnya diklik. Pola ini otomatis berfungsi untuk elemen anak yang ditambahkan belakangan."]},{"type":"code","heading":"Contoh 7.2 — Event delegation pada daftar tugas","kind":"web","html":"\u003cul id=\"daftar-tugas\">\n  \u003cli>Belajar JavaScript \u003cbutton class=\"hapus\">Hapus\u003c/button>\u003c/li>\n  \u003cli>Kerjakan tugas DOM \u003cbutton class=\"hapus\">Hapus\u003c/button>\u003c/li>\n  \u003cli>Review latihan \u003cbutton class=\"hapus\">Hapus\u003c/button>\u003c/li>\n\u003c/ul>","css":"body { font-family: system-ui, sans-serif; padding: 20px; }\nli { margin-bottom: 8px; }\n.hapus { margin-left: 8px; border: none; background: #fee2e2; color: #b91c1c; border-radius: 4px; padding: 2px 8px; cursor: pointer; }","js":"const daftar = document.getElementById(\"daftar-tugas\");\n\n// SATU listener di elemen induk \u003cul>, bukan di tiap \u003cbutton>\ndaftar.addEventListener(\"click\", (e) => {\n  if (e.target.classList.contains(\"hapus\")) {\n    e.target.closest(\"li\").remove();\n  }\n});"}],"exercises":[{"soal":"Buat sebuah tombol dan sebuah \u003cp> berisi angka 0. Setiap kali tombol diklik, tambahkan 1 pada angka tersebut dan tampilkan kembali (contoh: penghitung jumlah klik).","kunciKind":"web","kunci":{"html":"\u003cp id=\"counter\">0\u003c/p>\n\u003cbutton id=\"btn\">Klik Saya\u003c/button>","css":"body { font-family: sans-serif; padding: 20px; text-align: center; } #counter { font-size: 2rem; }","js":"let jumlah = 0;\nconst counter = document.getElementById(\"counter\");\nconst btn = document.getElementById(\"btn\");\n\nbtn.addEventListener(\"click\", () => {\n  jumlah++;\n  counter.textContent = jumlah;\n});"}},{"soal":"Buat input teks dengan event 'input' yang menampilkan jumlah karakter yang sudah diketik secara live (update setiap kali mengetik, tanpa perlu tombol submit).","kunciKind":"web","kunci":{"html":"\u003cinput type=\"text\" id=\"komentar\" placeholder=\"Tulis komentar...\">\n\u003cp id=\"jumlah-karakter\">0 karakter\u003c/p>","css":"body { font-family: sans-serif; padding: 20px; }\ninput { padding: 8px; width: 250px; }","js":"const input = document.getElementById(\"komentar\");\nconst label = document.getElementById(\"jumlah-karakter\");\n\ninput.addEventListener(\"input\", () => {\n  label.textContent = `${input.value.length} karakter`;\n});"}},{"soal":"Terapkan event delegation pada sebuah \u003cul> berisi beberapa \u003cli>: ketika salah satu \u003cli> diklik (di mana pun pada barisnya, bukan hanya tombol), beri class 'terpilih' pada li tersebut dan hapus class itu dari li lainnya.","kunciKind":"web","kunci":{"html":"\u003cul id=\"menu\">\n  \u003cli>Nasi Goreng\u003c/li>\n  \u003cli>Mie Ayam\u003c/li>\n  \u003cli>Soto Ayam\u003c/li>\n\u003c/ul>","css":"body { font-family: sans-serif; padding: 20px; } li { padding: 8px; cursor: pointer; border-radius: 6px; } .terpilih { background: #bbf7d0; font-weight: bold; }","js":"const menu = document.getElementById(\"menu\");\n\nmenu.addEventListener(\"click\", (e) => {\n  const li = e.target.closest(\"li\");\n  if (!li) return;\n\n  menu.querySelectorAll(\"li\").forEach((item) => item.classList.remove(\"terpilih\"));\n  li.classList.add(\"terpilih\");\n});"}}]},{"id":"bab8","number":8,"title":"Integrasi JavaScript, HTML, dan CSS","intro":["Bab ini merangkai semua materi sebelumnya: bagaimana JavaScript secara nyata mengendalikan HTML (struktur) dan CSS (tampilan) untuk membuat halaman web yang interaktif."],"sections":[{"type":"text","heading":"8.1 Tiga Cara Menyisipkan JavaScript ke HTML (Ringkasan Praktik Terbaik)","body":["Inline — kode JS ditulis langsung di atribut HTML, misalnya \u003cbutton onclick=\"lakukanSesuatu()\">. Cepat untuk uji coba, tetapi TIDAK disarankan pada proyek nyata karena mencampur struktur dan perilaku sehingga sulit dirawat.","Internal — kode JS ditulis di dalam tag \u003cscript> pada file HTML yang sama. Cocok untuk halaman kecil atau prototipe cepat.","External — kode JS ditulis di file .js terpisah dan dihubungkan dengan \u003cscript src=\"nama-file.js\">\u003c/script>. Ini pendekatan standar pada proyek nyata: HTML fokus pada struktur, CSS fokus pada tampilan, JS fokus pada perilaku — masing-masing berkas mudah dicari dan dirawat secara terpisah.","Catatan peletakan tag \u003cscript>: menaruhnya sebelum \u003c/body> (atau memakai atribut defer) memastikan seluruh elemen HTML sudah ada di DOM sebelum JavaScript mencoba mengaksesnya."]},{"type":"text","heading":"8.2 Dua Cara Mengubah Tampilan Lewat JavaScript","body":["element.style.namaProperti — mengubah SATU properti CSS langsung dari JS. Cocok untuk nilai yang dihitung secara dinamis saat runtime, misalnya lebar progress bar berdasarkan persentase, atau posisi elemen berdasarkan hasil perhitungan.","element.classList.toggle/add/remove(\"nama-class\") — menambah atau melepas SEKELOMPOK gaya sekaligus yang sudah didefinisikan lebih dulu di CSS. Cara ini LEBIH DISARANKAN untuk kebanyakan kasus (misalnya mode gelap, status aktif/nonaktif) karena tampilan tetap diatur terpusat di file CSS, JS hanya bertugas 'menyalakan/mematikan' kondisinya."]},{"type":"code","heading":"Contoh 8.1 — Studi Kasus: Toggle Mode Gelap","kind":"web","note":"Perhatikan: JS hanya menambah/menghapus class 'gelap' pada \u003cbody>; SEMUA definisi warna tetap berada di CSS.","html":"\u003cdiv class=\"panel\">\n  \u003ch2>Mode Gelap\u003c/h2>\n  \u003cp>Klik tombol untuk beralih antara mode terang dan gelap.\u003c/p>\n  \u003cbutton id=\"toggle-tema\">Aktifkan Mode Gelap\u003c/button>\n\u003c/div>","css":"body {\n  font-family: system-ui, sans-serif;\n  padding: 30px;\n  background: #ffffff;\n  color: #111827;\n  transition: background 0.3s, color 0.3s;\n}\nbody.gelap {\n  background: #111827;\n  color: #f3f4f6;\n}\n.panel { max-width: 360px; }\nbutton {\n  padding: 8px 14px; border: none; border-radius: 6px;\n  background: #2563eb; color: white; cursor: pointer;\n}\nbody.gelap button { background: #f3f4f6; color: #111827; }","js":"const tombol = document.getElementById(\"toggle-tema\");\n\ntombol.addEventListener(\"click\", () => {\n  document.body.classList.toggle(\"gelap\");\n\n  const modeGelapAktif = document.body.classList.contains(\"gelap\");\n  tombol.textContent = modeGelapAktif\n    ? \"Aktifkan Mode Terang\"\n    : \"Aktifkan Mode Gelap\";\n});"},{"type":"code","heading":"Contoh 8.2 — Studi Kasus: Validasi Form dengan Umpan Balik Visual","kind":"web","note":"Kombinasi style.borderColor (dihitung dinamis) dan classList (status pesan) memperlihatkan JS mengendalikan HTML sekaligus CSS.","html":"\u003cform id=\"form-registrasi\">\n  \u003clabel>Password (minimal 8 karakter):\u003c/label>\u003cbr>\n  \u003cinput type=\"password\" id=\"password\">\u003cbr>\n  \u003csmall id=\"feedback\">Belum diisi\u003c/small>\n\u003c/form>","css":"body { font-family: system-ui, sans-serif; padding: 20px; }\ninput { padding: 8px; border: 2px solid #cbd5e1; border-radius: 6px; }\nsmall { display: block; margin-top: 6px; }\n.valid { color: #059669; }\n.invalid { color: #dc2626; }","js":"const input = document.getElementById(\"password\");\nconst feedback = document.getElementById(\"feedback\");\n\ninput.addEventListener(\"input\", () => {\n  const panjangCukup = input.value.length >= 8;\n\n  // style.borderColor: nilai dihitung langsung berdasarkan kondisi\n  input.style.borderColor = panjangCukup ? \"#059669\" : \"#dc2626\";\n\n  // classList: status pesan diatur lewat class yang sudah didefinisikan di CSS\n  feedback.textContent = panjangCukup\n    ? \"Password sudah cukup panjang\"\n    : `Kurang ${8 - input.value.length} karakter lagi`;\n  feedback.className = panjangCukup ? \"valid\" : \"invalid\";\n});"}],"exercises":[{"soal":"Buat input dengan type='password' dan sebuah tombol berlabel 'Tampilkan'. Saat tombol diklik, ubah atribut type input menjadi 'text' (memakai setAttribute) sehingga password terlihat, dan ubah label tombol menjadi 'Sembunyikan'. Klik lagi untuk kembali ke kondisi semula.","kunciKind":"web","kunci":{"html":"\u003cinput type=\"password\" id=\"pw\" value=\"rahasia123\">\n\u003cbutton id=\"toggle\">Tampilkan\u003c/button>","css":"body { font-family: sans-serif; padding: 20px; }","js":"const pw = document.getElementById(\"pw\");\nconst toggle = document.getElementById(\"toggle\");\n\ntoggle.addEventListener(\"click\", () => {\n  const tersembunyi = pw.getAttribute(\"type\") === \"password\";\n  pw.setAttribute(\"type\", tersembunyi ? \"text\" : \"password\");\n  toggle.textContent = tersembunyi ? \"Sembunyikan\" : \"Tampilkan\";\n});"}},{"soal":"Buat beberapa \u003cdiv class='kartu'> di dalam sebuah container. Gunakan forEach + classList untuk memberi class 'genap' pada kartu bernomor urut genap (index 1, 3, 5, ...) supaya bisa diberi warna latar berbeda lewat CSS (efek 'zebra stripes').","kunciKind":"web","kunci":{"html":"\u003cdiv id=\"daftar-kartu\">\n  \u003cdiv class=\"kartu\">Baris 1\u003c/div>\n  \u003cdiv class=\"kartu\">Baris 2\u003c/div>\n  \u003cdiv class=\"kartu\">Baris 3\u003c/div>\n  \u003cdiv class=\"kartu\">Baris 4\u003c/div>\n\u003c/div>","css":".kartu { padding: 10px; border-bottom: 1px solid #e5e7eb; }\n.kartu.genap { background: #f1f5f9; }\nbody { font-family: sans-serif; padding: 20px; }","js":"const kartu = document.querySelectorAll(\".kartu\");\n\nkartu.forEach((el, index) => {\n  if (index % 2 === 1) {\n    el.classList.add(\"genap\");\n  }\n});"}},{"soal":"Buat input type='range' (slider) dan sebuah div progress bar. Gunakan event 'input' pada slider untuk mengubah lebar (style.width, dalam %) progress bar tersebut secara live sesuai nilai slider.","kunciKind":"web","kunci":{"html":"\u003cinput type=\"range\" id=\"slider\" min=\"0\" max=\"100\" value=\"30\">\n\u003cdiv class=\"track\">\u003cdiv class=\"fill\" id=\"fill\">\u003c/div>\u003c/div>","css":".track { width: 250px; height: 14px; background: #e5e7eb; border-radius: 7px; margin-top: 10px; overflow: hidden; }\n.fill { height: 100%; background: #2563eb; width: 30%; }\nbody { font-family: sans-serif; padding: 20px; }","js":"const slider = document.getElementById(\"slider\");\nconst fill = document.getElementById(\"fill\");\n\nslider.addEventListener(\"input\", () => {\n  fill.style.width = `${slider.value}%`;\n});"}}]},{"id":"bab9","number":9,"title":"Proyek Akhir Praktikum: Aplikasi To-Do List","intro":["Proyek akhir ini menggabungkan seluruh materi Bab 1-8 dalam satu aplikasi utuh: variabel & array untuk menyimpan data, fungsi untuk mengatur logika, DOM untuk menampilkan data, event handling untuk interaksi pengguna, serta manipulasi class untuk umpan balik visual. Aplikasi ini juga memakai localStorage agar daftar tugas tidak hilang saat halaman dimuat ulang."],"sections":[{"type":"text","heading":"9.1 Spesifikasi Proyek","body":["Pengguna dapat menambah tugas baru lewat input teks.","Setiap tugas dapat ditandai selesai/belum selesai dengan mengklik teksnya (tampilan tercoret saat selesai).","Setiap tugas dapat dihapus lewat tombol hapus (memakai event delegation).","Aplikasi menampilkan jumlah tugas yang belum selesai.","Data tersimpan di localStorage browser sehingga tetap ada walau halaman di-refresh."]},{"type":"code","heading":"Contoh 9.1 — Aplikasi To-Do List Lengkap","kind":"web","note":"Ini adalah aplikasi utuh — coba tambah beberapa tugas, tandai selesai, lalu hapus salah satunya.","html":"\u003cdiv class=\"app\">\n  \u003ch1>Daftar Tugas\u003c/h1>\n  \u003cform id=\"form-tugas\">\n    \u003cinput type=\"text\" id=\"input-tugas\" placeholder=\"Tugas baru...\" autocomplete=\"off\">\n    \u003cbutton type=\"submit\">Tambah\u003c/button>\n  \u003c/form>\n  \u003cul id=\"daftar-tugas\">\u003c/ul>\n  \u003cp id=\"ringkasan\">\u003c/p>\n\u003c/div>","css":"body { font-family: system-ui, sans-serif; background: #f8fafc; padding: 30px; }\n.app { max-width: 380px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }\nh1 { font-size: 1.3rem; margin-top: 0; color: #1e293b; }\n#form-tugas { display: flex; gap: 8px; margin-bottom: 14px; }\n#input-tugas { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }\n#form-tugas button { padding: 8px 14px; border: none; border-radius: 6px; background: #2563eb; color: white; cursor: pointer; }\n#daftar-tugas { list-style: none; padding: 0; margin: 0; }\n#daftar-tugas li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }\n#daftar-tugas li span { cursor: pointer; }\n#daftar-tugas li.selesai span { text-decoration: line-through; color: #94a3b8; }\n.btn-hapus { border: none; background: #fee2e2; color: #b91c1c; border-radius: 4px; padding: 2px 8px; cursor: pointer; }\n#ringkasan { color: #64748b; font-size: 0.9rem; margin-top: 10px; margin-bottom: 0; }","js":"const KEY_PENYIMPANAN = \"daftar-tugas-praktikum\";\n\nconst form = document.getElementById(\"form-tugas\");\nconst input = document.getElementById(\"input-tugas\");\nconst daftarEl = document.getElementById(\"daftar-tugas\");\nconst ringkasanEl = document.getElementById(\"ringkasan\");\n\n// Ambil data tersimpan, atau mulai dengan array kosong jika belum ada\nlet tugas = JSON.parse(localStorage.getItem(KEY_PENYIMPANAN)) || [];\n\nfunction simpan() {\n  localStorage.setItem(KEY_PENYIMPANAN, JSON.stringify(tugas));\n}\n\nfunction render() {\n  daftarEl.innerHTML = \"\"; // kosongkan lalu gambar ulang dari data\n\n  tugas.forEach((item) => {\n    const li = document.createElement(\"li\");\n    li.className = item.selesai ? \"selesai\" : \"\";\n    li.dataset.id = item.id;\n\n    li.innerHTML = `\n      \u003cspan>${item.teks}\u003c/span>\n      \u003cbutton class=\"btn-hapus\">Hapus\u003c/button>\n    `;\n\n    daftarEl.appendChild(li);\n  });\n\n  const sisaAktif = tugas.filter((t) => !t.selesai).length;\n  ringkasanEl.textContent = `${sisaAktif} tugas belum selesai dari total ${tugas.length}`;\n\n  simpan();\n}\n\n// Tambah tugas baru\nform.addEventListener(\"submit\", (e) => {\n  e.preventDefault();\n  const teks = input.value.trim();\n  if (teks === \"\") return;\n\n  tugas.push({ id: Date.now(), teks, selesai: false });\n  input.value = \"\";\n  render();\n});\n\n// Event delegation: tandai selesai ATAU hapus, tergantung yang diklik\ndaftarEl.addEventListener(\"click\", (e) => {\n  const li = e.target.closest(\"li\");\n  if (!li) return;\n  const id = Number(li.dataset.id);\n\n  if (e.target.classList.contains(\"btn-hapus\")) {\n    tugas = tugas.filter((t) => t.id !== id);\n  } else if (e.target.tagName === \"SPAN\") {\n    tugas = tugas.map((t) =>\n      t.id === id ? { ...t, selesai: !t.selesai } : t\n    );\n  }\n\n  render();\n});\n\nrender(); // gambar tampilan awal saat aplikasi dibuka"},{"type":"text","heading":"9.2 Penjelasan Bagian Kunci","body":["Pola render() adalah pola umum dalam pemrograman antarmuka: data (array tugas) adalah satu-satunya sumber kebenaran (single source of truth), dan setiap kali data berubah, seluruh tampilan digambar ulang dari data tersebut — bukan diubah sedikit-sedikit secara manual. Pola ini membuat kode lebih mudah dipahami dan menjadi dasar dari cara kerja framework modern seperti React atau Vue.","localStorage.setItem/getItem hanya bisa menyimpan string, karena itu array/object harus diubah dulu ke teks dengan JSON.stringify() sebelum disimpan, dan dikembalikan ke bentuk array/object dengan JSON.parse() saat dibaca kembali."]},{"type":"text","heading":"9.3 Tantangan Pengembangan Lanjutan","body":["Setelah memahami kode di atas, coba kembangkan sendiri sebagai latihan mandiri (tanpa kunci jawaban — inilah saatnya bereksperimen):","1. Tambahkan tombol filter: Semua / Aktif / Selesai.","2. Tambahkan tombol 'Hapus Semua yang Selesai'.","3. Tambahkan validasi agar tidak bisa menambah tugas dengan teks yang sama persis (duplikat).","4. Tambahkan fitur edit teks tugas (klik dua kali untuk mengedit).","5. Tambahkan animasi CSS sederhana saat tugas baru ditambahkan atau dihapus."]}],"exercises":[]},{"id":"bab10","number":10,"title":"Pengantar Konsep Lanjutan dan Langkah Berikutnya","intro":["Modul ini ditutup dengan pengantar singkat ke beberapa konsep yang akan sering ditemui setelah menguasai dasar-dasar JavaScript, agar peserta tahu ke mana harus melangkah selanjutnya."],"sections":[{"type":"text","heading":"10.1 Asynchronous JavaScript (Sekilas)","body":["JavaScript pada dasarnya berjalan satu per satu secara berurutan (synchronous). Namun beberapa tugas — seperti menunggu jawaban dari server, atau menunda sesuatu — butuh cara agar program tidak 'macet' sambil menunggu. Untuk itu JavaScript menyediakan mekanisme asynchronous: setTimeout (menunda eksekusi), Promise (merepresentasikan hasil yang akan datang, baik sukses maupun gagal), dan fetch (mengambil data dari server/API, dibangun di atas Promise). Konsep ini adalah pintu masuk untuk topik lanjutan setelah modul ini."]},{"type":"code","heading":"Contoh 10.1 — setTimeout dan Promise sederhana","kind":"js","code":"console.log(\"1. Mulai\");\n\nsetTimeout(() => {\n  console.log(\"3. Ini muncul setelah 1 detik (asynchronous)\");\n}, 1000);\n\nconsole.log(\"2. Baris ini dijalankan duluan, tidak menunggu setTimeout\");\n\n// Promise: membungkus proses yang butuh waktu (di sini disimulasikan dengan setTimeout)\nfunction ambilDataSimulasi() {\n  return new Promise((resolve) => {\n    setTimeout(() => {\n      resolve({ nama: \"Data dari server (simulasi)\" });\n    }, 800);\n  });\n}\n\nambilDataSimulasi().then((data) => {\n  console.log(\"Data diterima:\", data.nama);\n});"},{"type":"text","heading":"Catatan tentang fetch()","body":["Di proyek web sungguhan, data biasanya diambil dari server dengan fetch(url), yang mengembalikan Promise berisi respons. Contoh polanya: fetch(url).then(res => res.json()).then(data => { /* gunakan data */ }). Kode contoh fetch tidak dijalankan langsung di dalam playground modul ini karena lingkungan pratinjau membatasi permintaan ke server luar — silakan coba pola ini langsung di proyek/berkas HTML kalian sendiri di komputer masing-masing."]},{"type":"text","heading":"10.2 Rekap localStorage","body":["Sudah dipraktikkan langsung di proyek Bab 9: localStorage.setItem(key, value) menyimpan data di browser secara permanen (sampai dihapus), localStorage.getItem(key) membacanya kembali. Karena localStorage hanya menerima string, data berbentuk array/object perlu diubah dengan JSON.stringify() sebelum disimpan dan JSON.parse() setelah dibaca."]},{"type":"text","heading":"10.3 Langkah Berikutnya","body":["Setelah menguasai isi modul ini, arah belajar yang disarankan: (1) memperdalam asynchronous JavaScript (Promise, async/await, fetch ke API sungguhan), (2) mempelajari dasar penyimpanan/pengambilan data dari backend, (3) mencoba salah satu framework front-end populer (React, Vue, atau Svelte) yang dibangun di atas konsep DOM dan event handling yang sudah dipelajari di sini, dan (4) membiasakan diri membaca dokumentasi resmi MDN Web Docs (developer.mozilla.org) sebagai referensi JavaScript yang paling lengkap dan tepercaya."]}],"exercises":[]}],"cheatsheet":[{"kategori":"Variabel","item":"let x = 5; const y = 10;"},{"kategori":"Tipe Data","item":"typeof x, Array.isArray(x)"},{"kategori":"Template Literal","item":"`Halo ${nama}`"},{"kategori":"Kondisi","item":"if / else if / else, switch"},{"kategori":"Perulangan","item":"for, while, for...of, for...in"},{"kategori":"Fungsi","item":"function f(){}, const f = () => {}"},{"kategori":"Array","item":"map, filter, reduce, forEach, find"},{"kategori":"Object","item":"obj.prop, obj['prop'], {...spread}"},{"kategori":"Pilih Elemen","item":"querySelector, querySelectorAll"},{"kategori":"Ubah Konten","item":"textContent, innerHTML"},{"kategori":"Ubah Gaya","item":"element.style.x, classList.toggle"},{"kategori":"Event","item":"el.addEventListener('click', fn)"},{"kategori":"Penyimpanan","item":"localStorage.setItem/getItem + JSON"}]}</script>
+<script>
+(function(){
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("content-data").textContent);
+
+  document.getElementById("page-title").textContent = DATA.title;
+  document.getElementById("page-subtitle").textContent = DATA.subtitle;
+  document.title = DATA.title;
+
+  var main = document.getElementById("main");
+  var chipNav = document.getElementById("chip-nav");
+
+  /* ---------- helpers ---------- */
+  function el(tag, opts){
+    opts = opts || {};
+    var node = document.createElement(tag);
+    if (opts.cls) node.className = opts.cls;
+    if (opts.text) node.textContent = opts.text;
+    if (opts.html) node.innerHTML = opts.html;
+    if (opts.id) node.id = opts.id;
+    if (opts.attrs) for (var k in opts.attrs) node.setAttribute(k, opts.attrs[k]);
+    return node;
+  }
+
+  function fmtValue(v){
+    if (v === undefined) return "undefined";
+    if (v === null) return "null";
+    if (typeof v === "string") return v;
+    if (typeof v === "number" || typeof v === "boolean") return String(v);
+    try { return JSON.stringify(v); } catch(e) { return String(v); }
+  }
+
+  /* ---------- intro card ---------- */
+  var introCard = el("div", { cls: "intro-card" });
+  introCard.appendChild(el("h2", { text: "Cara memakai halaman ini" }));
+  introCard.appendChild(el("p", { text: "Setiap contoh kode punya editor yang bisa langsung diedit. Tekan “Jalankan” untuk melihat hasilnya, atau “Reset” untuk mengembalikan ke kode semula. Kerjakan dulu soal latihan secara mandiri sebelum membuka kunci jawabannya." }));
+  var legend = el("div", { cls: "legend" });
+  legend.innerHTML =
+    '<span><span class="swatch" style="background:#475569;border:1px solid #475569"></span>Editor kode (bisa dijalankan)</span>' +
+    '<span><span class="swatch" style="background:var(--accent-soft);border:1px solid var(--accent)"></span>Soal latihan</span>' +
+    '<span><span class="swatch" style="background:var(--good-soft);border:1px solid var(--good)"></span>Kunci jawaban</span>';
+  introCard.appendChild(legend);
+  main.appendChild(introCard);
+
+  /* ---------- playground factory ---------- */
+  var pgCounter = 0;
+
+  function buildConsoleRunner(pgEl, editorTextarea, outputEl){
+    return function run(){
+      var code = editorTextarea.value;
+      var logs = [];
+      var fakeConsole = {
+        log: function(){ logs.push({ t: "log", v: Array.prototype.slice.call(arguments).map(fmtValue).join(" ") }); },
+        error: function(){ logs.push({ t: "err", v: Array.prototype.slice.call(arguments).map(fmtValue).join(" ") }); },
+        warn: function(){ logs.push({ t: "err", v: Array.prototype.slice.call(arguments).map(fmtValue).join(" ") }); }
+      };
+      try {
+        var fn = new Function("console", code);
+        fn(fakeConsole);
+      } catch (e) {
+        logs.push({ t: "err", v: e.message });
+      }
+      outputEl.innerHTML = "";
+      if (!logs.length) {
+        outputEl.appendChild(el("span", { cls: "empty", text: "(tidak ada output console.log)" }));
+      } else {
+        logs.forEach(function(item, i){
+          var line = el("div", { cls: item.t === "err" ? "err" : "" , text: item.v });
+          outputEl.appendChild(line);
+        });
+      }
+    };
+  }
+
+  function createJsPlayground(code){
+    var wrap = el("div", { cls: "pg" });
+    var head = el("div", { cls: "pg-head" });
+    head.appendChild(el("span", { cls: "pg-label", text: "JAVASCRIPT" }));
+    var actions = el("div", { cls: "pg-actions" });
+    var runBtn = el("button", { cls: "act run", html: "▶ Jalankan" });
+    var resetBtn = el("button", { cls: "act", text: "Reset" });
+    actions.appendChild(runBtn); actions.appendChild(resetBtn);
+    head.appendChild(actions);
+    wrap.appendChild(head);
+
+    var editor = el("textarea", { cls: "pg-editor" });
+    editor.value = code;
+    editor.spellcheck = false;
+    editor.rows = Math.min(18, Math.max(3, code.split("\n").length));
+    wrap.appendChild(editor);
+
+    var consoleWrap = el("div", { cls: "pg-console" });
+    consoleWrap.appendChild(el("div", { cls: "pg-console-label", text: "CONSOLE" }));
+    var output = el("pre", { cls: "pg-console-output" });
+    consoleWrap.appendChild(output);
+    wrap.appendChild(consoleWrap);
+
+    var run = buildConsoleRunner(wrap, editor, output);
+    runBtn.addEventListener("click", run);
+    resetBtn.addEventListener("click", function(){ editor.value = code; run(); });
+
+    wrap._run = run;
+    wrap._ran = false;
+    return wrap;
+  }
+
+  function createWebPlayground(payload){
+    var wrap = el("div", { cls: "pg" });
+    var tabsBar = el("div", { cls: "pg-tabs" });
+    var tabs = {};
+    var editors = {};
+
+    ["html","css","js"].forEach(function(kind){
+      var btn = el("button", { cls: "tab", text: kind.toUpperCase(), attrs: { "data-tab": kind } });
+      tabsBar.appendChild(btn);
+      tabs[kind] = btn;
+    });
+
+    var actions = el("div", { cls: "pg-actions" });
+    var runBtn = el("button", { cls: "act run", html: "▶ Jalankan" });
+    var resetBtn = el("button", { cls: "act", text: "Reset" });
+    actions.appendChild(runBtn); actions.appendChild(resetBtn);
+    tabsBar.appendChild(actions);
+    wrap.appendChild(tabsBar);
+
+    ["html","css","js"].forEach(function(kind){
+      var ta = el("textarea", { cls: "pg-editor" });
+      ta.value = payload[kind] || "";
+      ta.spellcheck = false;
+      ta.rows = Math.min(16, Math.max(3, (payload[kind] || "").split("\n").length));
+      ta.hidden = kind !== "html";
+      wrap.appendChild(ta);
+      editors[kind] = ta;
+    });
+
+    function selectTab(kind){
+      Object.keys(tabs).forEach(function(k){
+        tabs[k].classList.toggle("active", k === kind);
+        editors[k].hidden = k !== kind;
+      });
+    }
+    Object.keys(tabs).forEach(function(k){
+      tabs[k].addEventListener("click", function(){ selectTab(k); });
+    });
+    selectTab("html");
+
+    var previewWrap = el("div", { cls: "pg-preview-wrap" });
+    previewWrap.appendChild(el("div", { cls: "pg-preview-label", text: "PREVIEW" }));
+    var iframe = el("iframe", { cls: "pg-preview", attrs: { sandbox: "allow-scripts allow-same-origin allow-forms allow-modals" } });
+    previewWrap.appendChild(iframe);
+    wrap.appendChild(previewWrap);
+
+    function run(){
+      var htmlVal = editors.html.value;
+      var cssVal = editors.css.value;
+      var jsVal = editors.js.value;
+      var doc =
+        "<!doctype html><html><head><meta charset=\"utf-8\">" +
+        "<style>body{margin:0;padding:16px;font-family:system-ui,sans-serif;}" + cssVal + "</style>" +
+        "</head><body>" + htmlVal +
+        "<script>try{\n" + jsVal + "\n}catch(e){document.body.insertAdjacentHTML('beforeend','<div style=\"position:fixed;left:0;right:0;bottom:0;background:#dc2626;color:#fff;font:12px monospace;padding:8px 12px;\">Error: '+e.message+'</div>');}<\/script>" +
+        "</body></html>";
+      iframe.setAttribute("srcdoc", doc);
+    }
+
+    runBtn.addEventListener("click", run);
+    resetBtn.addEventListener("click", function(){
+      editors.html.value = payload.html || "";
+      editors.css.value = payload.css || "";
+      editors.js.value = payload.js || "";
+      run();
+    });
+
+    wrap._run = run;
+    wrap._ran = false;
+    return wrap;
+  }
+
+  function makePlayground(kind, payload){
+    var node = kind === "js" ? createJsPlayground(payload.code) : createWebPlayground(payload);
+    observer.observe(node);
+    return node;
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting && !entry.target._ran) {
+        entry.target._ran = true;
+        entry.target._run();
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: "80px" });
+
+  /* ---------- exercise builder ---------- */
+  function buildExercise(chNum, idx, ex){
+    var box = el("div", { cls: "exercise" });
+    var soal = el("div", { cls: "exercise-soal" });
+    soal.appendChild(el("span", { cls: "tag", text: "SOAL " + chNum + "." + (idx+1) }));
+    soal.appendChild(el("p", { text: ex.soal }));
+    box.appendChild(soal);
+
+    var toggle = el("button", { cls: "kunci-toggle" });
+    toggle.innerHTML = '<span class="chev">›</span><span>Tampilkan Kunci Jawaban</span>';
+    box.appendChild(toggle);
+
+    var body = el("div", { cls: "kunci-body" });
+    body.hidden = true;
+    box.appendChild(body);
+
+    var built = false;
+    toggle.addEventListener("click", function(){
+      var willOpen = body.hidden;
+      body.hidden = !willOpen;
+      toggle.classList.toggle("open", willOpen);
+      toggle.querySelector("span:last-child").textContent = willOpen ? "Sembunyikan Kunci Jawaban" : "Tampilkan Kunci Jawaban";
+      if (willOpen && !built) {
+        built = true;
+        if (ex.kunciKind === "text") {
+          body.appendChild(el("div", { cls: "kunci-text", text: ex.kunci }));
+        } else if (ex.kunciKind === "js") {
+          body.appendChild(makePlayground("js", { code: ex.kunci }));
+        } else if (ex.kunciKind === "web") {
+          body.appendChild(makePlayground("web", ex.kunci));
+        }
+      }
+    });
+
+    return box;
+  }
+
+  /* ---------- chapter builder ---------- */
+  DATA.chapters.forEach(function(ch){
+    var chip = el("a", { text: "Bab " + ch.number, attrs: { href: "#" + ch.id } });
+    chipNav.appendChild(chip);
+
+    var sec = el("section", { cls: "chapter", id: ch.id });
+    sec.appendChild(el("div", { cls: "chapter-kicker", text: "BAB " + String(ch.number).padStart(2,"0") }));
+    sec.appendChild(el("h2", { cls: "title", text: ch.title }));
+
+    var introWrap = el("div", { cls: "intro" });
+    (ch.intro || []).forEach(function(p){ introWrap.appendChild(el("p", { text: p })); });
+    sec.appendChild(introWrap);
+
+    (ch.sections || []).forEach(function(s){
+      if (s.type === "text") {
+        sec.appendChild(el("h3", { cls: "sec-heading", text: s.heading }));
+        (s.body || []).forEach(function(p){ sec.appendChild(el("p", { text: p })); });
+      } else if (s.type === "code") {
+        sec.appendChild(el("h4", { cls: "code-heading", text: s.heading }));
+        if (s.note) sec.appendChild(el("p", { cls: "code-note", text: "Catatan: " + s.note }));
+        if (s.kind === "js") {
+          sec.appendChild(makePlayground("js", { code: s.code }));
+        } else {
+          sec.appendChild(makePlayground("web", { html: s.html, css: s.css, js: s.js }));
+        }
+      }
+    });
+
+    if (ch.exercises && ch.exercises.length) {
+      sec.appendChild(el("div", { cls: "exercises-title", text: "Latihan Bab " + ch.number }));
+      ch.exercises.forEach(function(ex, i){ sec.appendChild(buildExercise(ch.number, i, ex)); });
+    }
+
+    main.appendChild(sec);
+  });
+
+  /* ---------- cheatsheet ---------- */
+  var chipCheat = el("a", { text: "Cheat Sheet", attrs: { href: "#cheatsheet" } });
+  chipNav.appendChild(chipCheat);
+
+  var cheatSec = el("section", { cls: "chapter", id: "cheatsheet" });
+  cheatSec.appendChild(el("div", { cls: "chapter-kicker", text: "LAMPIRAN" }));
+  cheatSec.appendChild(el("h2", { cls: "title", text: "Ringkasan Sintaks (Cheat Sheet)" }));
+  var grid = el("div", { cls: "cheat-grid" });
+  DATA.cheatsheet.forEach(function(row){
+    var r = el("div", { cls: "cheat-row" });
+    r.appendChild(el("div", { cls: "cheat-cat", text: row.kategori }));
+    r.appendChild(el("div", { cls: "cheat-val mono", text: row.item }));
+    grid.appendChild(r);
+  });
+  cheatSec.appendChild(grid);
+  main.appendChild(cheatSec);
+
+  /* ---------- references ---------- */
+  var refSec = el("section", { cls: "chapter", id: "referensi" });
+  refSec.appendChild(el("div", { cls: "chapter-kicker", text: "PENUTUP" }));
+  refSec.appendChild(el("h2", { cls: "title", text: "Referensi Belajar Lanjutan" }));
+  var ul = el("ul", { cls: "refs" });
+  [
+    "MDN Web Docs (developer.mozilla.org) — referensi resmi dan paling lengkap untuk HTML, CSS, dan JavaScript.",
+    "javascript.info — tutorial JavaScript modern yang disusun bertahap dari dasar hingga lanjutan.",
+    "freeCodeCamp (freecodecamp.org) — kurikulum web development gratis dengan latihan interaktif.",
+    "Dokumentasi resmi React, Vue, atau Svelte sebagai langkah lanjutan setelah menguasai DOM dan event handling secara manual."
+  ].forEach(function(t){ ul.appendChild(el("li", { text: t })); });
+  refSec.appendChild(ul);
+  main.appendChild(refSec);
+
+  /* ---------- scrollspy ---------- */
+  var chipLinks = Array.prototype.slice.call(chipNav.querySelectorAll("a"));
+  var sections = Array.prototype.slice.call(document.querySelectorAll("section.chapter"));
+  var spy = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      var link = chipNav.querySelector('a[href="#' + entry.target.id + '"]');
+      if (!link) return;
+      if (entry.isIntersecting) {
+        chipLinks.forEach(function(l){ l.classList.remove("active"); });
+        link.classList.add("active");
+        link.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+      }
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  sections.forEach(function(s){ spy.observe(s); });
+
+})();
+</script>
