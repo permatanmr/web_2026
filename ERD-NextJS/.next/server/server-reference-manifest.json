@@ -1,0 +1,28 @@
+{
+  "node": {
+    "40e36e815fc4907031e6d12be5b510887481a62a74": {
+      "workers": {
+        "app/page": {
+          "moduleId": 57526,
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "app/actions.ts",
+      "exportedName": "createPost"
+    },
+    "40e543b03692ee24c2f544b6429dce59e1452146a7": {
+      "workers": {
+        "app/page": {
+          "moduleId": 57526,
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "app/actions.ts",
+      "exportedName": "createComment"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "FdOr/7jjGZ2o8ErpEF3minz5I09x4RwwmE4RxMnrfFM="
+}

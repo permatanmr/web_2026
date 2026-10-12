@@ -1,0 +1,3 @@
+module.exports=[71570,a=>a.a(async(b,c)=>{try{var d=a.i(56004),e=b([d]);[d]=e.then?(await e)():e,a.s([]),c()}catch(a){c(a)}},!1),57526,a=>a.a(async(b,c)=>{try{var d=a.i(71570),e=a.i(56004),f=b([d,e]);[d,e]=f.then?(await f)():f,a.s(["40e36e815fc4907031e6d12be5b510887481a62a74",()=>e.createPost,"40e543b03692ee24c2f544b6429dce59e1452146a7",()=>e.createComment]),c()}catch(a){c(a)}},!1)];
+
+//# sourceMappingURL=_next-internal_server_app_page_actions_1yk1tcb.js.map

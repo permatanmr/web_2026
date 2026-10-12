@@ -1,0 +1,66 @@
+<html>
+
+<head>
+  <title>Login Page</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      text-align: center;
+      padding: 30px 40px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+
+    form {
+      display: inline-block;
+      text-align: left;
+    }
+
+    label {
+      display: inline-block;
+      width: 100px;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 180px;
+      padding: 6px;
+      margin-bottom: 10px;
+    }
+
+    input[type="submit"] {
+      display: block;
+      margin: 0 auto;
+      padding: 8px 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-box">
+    <h1>Login</h1>
+    <form action="/login" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required><br>
+      <input type="submit" value="Login">
+    </form>
+  </div>
+</body>
+
+</html>
